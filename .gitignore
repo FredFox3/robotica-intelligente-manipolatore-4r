@@ -1,0 +1,7 @@
+# File di lavoro e risultati MATLAB
+*.asv
+*.m~
+*.autosave
+*.mat
+*.fig
+slprj/
