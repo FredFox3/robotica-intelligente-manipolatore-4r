@@ -1,5 +1,5 @@
 function [T, x, y, phi] = fk_4R(theta, L)
-% DH standard: a_i = L_i, alpha_i = d_i = 0; angoli in radianti.
+% Standard DH: a_i = L_i, alpha_i = d_i = 0; angles in radians.
 validateattributes(theta, {'numeric'}, {'real','finite','vector','numel',4});
 validateattributes(L, {'numeric'}, {'real','finite','positive','vector','numel',4});
 theta = double(theta(:));
@@ -17,5 +17,5 @@ for i = 1:4
 end
 x = T(1,4);
 y = T(2,4);
-phi = sum(theta); % Orientamento non avvolto; la rotazione e' periodica.
+phi = sum(theta); % Unwrapped orientation; rotation is periodic.
 end

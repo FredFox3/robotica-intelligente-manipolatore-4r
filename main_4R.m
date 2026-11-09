@@ -2,8 +2,8 @@ clearvars;
 close all;
 clc;
 
-% Unita' SI. Barre omogenee sottili, baricentri a meta' link, assi z paralleli.
-% Giunti ideali: assenza di attrito, elasticita', limiti e saturazioni.
+% SI units. Uniform slender rods, centers of mass at half length, parallel z axes.
+% Ideal joints: no friction, elasticity, limits or saturation.
 params.L = [0.40;0.32;0.24;0.16];
 params.m = [2.0;1.5;1.0;0.6];
 params.I = params.m.*params.L.^2/12;
@@ -14,10 +14,10 @@ qStart = [20;-35;25;10]*pi/180;
 qSeed = [70;-55;40;-20]*pi/180;
 [~,xGoal,yGoal,phiGoal] = fk_4R(qSeed,params.L);
 qGoal = ik_4R(xGoal,yGoal,phiGoal,params.L,-1);
-% Scegliere rappresentanti angolari vicini alla posa iniziale.
+% Choose angle representatives close to the initial configuration.
 qGoal = qStart + atan2(sin(qGoal-qStart),cos(qGoal-qStart));
 moveTime = 5;
-endTime = 8; % Dopo il moto, il riferimento resta fermo per osservare l'assestamento.
+endTime = 8; % Hold the reference after the motion to observe settling.
 Kp = diag([64,64,49,36]);
 Kd = diag([16,16,14,12]);
 initialOffset = [4;-3;2;-2]*pi/180;
@@ -93,7 +93,7 @@ drawnow;
 animate_4R(t,q,params.L,desiredXY);
 
 function [qr,dqr,ddqr] = quintic_reference(t,q0,qf,T)
-% Velocita' e accelerazione nulle agli estremi; mantenimento dopo T.
+% Zero velocity and acceleration at both ends; hold after T.
 r = min(1,max(0,t(:).'/T));
 s = 10*r.^3-15*r.^4+6*r.^5;
 ds = (30*r.^2-60*r.^3+30*r.^4)/T;
@@ -114,7 +114,7 @@ end
 function dz = closed_loop(t,z,p,Kp,Kd,q0,qf,T)
 dq = z(5:8);
 [tau,M,C,G] = computed_torque(t,z(1:4),dq,p,Kp,Kd,q0,qf,T);
-ddq = M\(tau-C*dq-G); % Dinamica completa, senza sostituire l'errore ideale.
+ddq = M\(tau-C*dq-G); % Full dynamics, without substituting the ideal error dynamics.
 dz = [dq;ddq];
 end
 
@@ -161,7 +161,7 @@ for k = 1:size(qCases,2)
     assert(norm(Czero,'fro') == 0);
 end
 
-% Polso all'origine, 2R ripiegato, bordo esterno e bordo interno 3R.
+% Wrist at the origin, folded 2R, outer and inner 3R boundaries.
 specialL = {[1;1;1;0.2], [1;1;2;0.2], [3;0.5;0.5;0.2], [1;1;1e-6;0.2]};
 specialPoses = {[0.2;0;0], [0.2;0;0], [2.2;0;0], [-0.200001;0;pi]};
 for k = 1:numel(specialL)
@@ -171,7 +171,7 @@ for k = 1:numel(specialL)
         check_pose(qi,specialL{k},target);
     end
 end
-% Posa ottenuta da un primo 2R completamente ripiegato.
+% Pose obtained with the first 2R fully folded.
 Lf = [1;1;1;0.2];
 [~,xf,yf,phif] = fk_4R([0;pi;0;0],Lf);
 for elbow = [-1,1]
@@ -204,7 +204,7 @@ assert(recognized, 'Posa irraggiungibile non riconosciuta.');
 end
 
 function [kinetic,potential] = energy_4R(q,dq,p)
-% Ricorsione geometrica indipendente dall'assemblaggio di M e G.
+% Geometric recursion independent of the assembly of M and G.
 a = cumsum(q);
 omega = cumsum(dq);
 joint = zeros(2,1);

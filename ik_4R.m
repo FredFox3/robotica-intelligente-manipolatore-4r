@@ -1,5 +1,5 @@
 function theta = ik_4R(x, y, phi, L, elbow)
-% Soluzione analitica; elbow = +1 (default) o -1 sceglie il segno di q_2.
+% Analytic solution; elbow = +1 (default) or -1 selects the sign of q_2.
 validateattributes(x, {'numeric'}, {'real','finite','scalar'});
 validateattributes(y, {'numeric'}, {'real','finite','scalar'});
 validateattributes(phi, {'numeric'}, {'real','finite','scalar'});
@@ -14,7 +14,7 @@ end
 L = double(L(:));
 phi = atan2(sin(double(phi)), cos(double(phi)));
 
-% Il polso e' l'estremo del link 3. Normalizzare limita gli errori di scala.
+% The wrist is the tip of link 3. Normalization limits scaling errors.
 scale = max(L);
 l = L/scale;
 w = [double(x)/scale; double(y)/scale] - l(4)*[cos(phi); sin(phi)];
@@ -24,8 +24,8 @@ if ~isfinite(r)
     error('ik_4R:Unreachable', 'Posa fuori dallo spazio raggiungibile.');
 end
 
-% Con psi = q_1+q_2+q_3, u = w-l_3*[cos(psi);sin(psi)] deve
-% appartenere all'anello 2R: a <= norm(u) <= b.
+% With psi = q_1+q_2+q_3, u = w-l_3*[cos(psi);sin(psi)] must
+% lie in the 2R annulus: a <= norm(u) <= b.
 a = abs(l(1)-l(2));
 b = l(1)+l(2);
 rhoMin = max(a, abs(r-l(3)));
@@ -34,10 +34,10 @@ if rhoMin > rhoMax + tol
     error('ik_4R:Unreachable', 'Posa fuori dallo spazio raggiungibile.');
 end
 if r == 0
-    psi = 0; % Qualunque orientamento e' equivalente se il polso e' all'origine.
+    psi = 0; % Any orientation is equivalent when the wrist is at the origin.
 else
     % rho^2 = r^2+l_3^2-2*r*l_3*cos(delta), delta = psi-atan2(w_y,w_x).
-    % L'intervallo ammissibile di cos(delta) evita di fissare un giunto.
+    % The admissible range of cos(delta) avoids fixing a joint.
     denominator = 2*r*l(3);
     cMin = (r^2 + (l(3)-b)*(l(3)+b))/denominator;
     cMax = (r^2 + (l(3)-a)*(l(3)+a))/denominator;
@@ -54,13 +54,13 @@ if rho < a-tol || rho > b+tol
 end
 
 if rho <= tol && abs(l(1)-l(2)) <= tol
-    % 2R completamente ripiegato: q_1 e' libero.
+    % Fully folded 2R: q_1 is free.
     q1 = 0;
     q2 = double(elbow)*pi;
 else
-    rho = max(a,min(b,rho)); % Correzione dei soli sconfinamenti di arrotondamento.
-    % Formula di Erone fattorizzata: piu' stabile di sqrt(1-cos(q_2)^2)
-    % quando il 2R e' quasi completamente ripiegato o disteso.
+    rho = max(a,min(b,rho)); % Correct roundoff excursions only.
+    % Factored Heron's formula: more stable than sqrt(1-cos(q_2)^2)
+    % when the 2R is nearly fully folded or extended.
     area4 = sqrt(max(0,(b-rho)*(b+rho)*(rho-a)*(rho+a)));
     signedArea4 = double(elbow)*area4;
     q2 = atan2(signedArea4, rho^2-l(1)^2-l(2)^2);
@@ -71,7 +71,7 @@ q4 = phi-psi;
 theta = [q1; q2; q3; q4];
 theta = atan2(sin(theta), cos(theta));
 
-% Controllo indipendente tramite il prodotto delle trasformazioni DH.
+% Independent check using the product of the DH transformations.
 [~, xf, yf, phif] = fk_4R(theta, L);
 positionError = hypot(xf/scale-double(x)/scale, yf/scale-double(y)/scale);
 angleError = abs(atan2(sin(phif-phi), cos(phif-phi)));

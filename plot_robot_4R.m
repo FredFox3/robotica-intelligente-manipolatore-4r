@@ -1,5 +1,5 @@
 function h = plot_robot_4R(theta, L, ax, h)
-% h = plot_robot_4R(q,L,ax); passare h al quarto argomento per aggiornare.
+% h = plot_robot_4R(q,L,ax); pass h as the fourth argument to update.
 validateattributes(theta, {'numeric'}, {'real','finite','vector','numel',4});
 validateattributes(L, {'numeric'}, {'real','finite','positive','vector','numel',4});
 if nargin < 3 || isempty(ax)

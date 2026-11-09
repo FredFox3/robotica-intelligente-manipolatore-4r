@@ -1,5 +1,5 @@
 function model = derive_dynamics_4R()
-% Richiede Symbolic Math Toolbox. Non genera file ne' semplifica globalmente.
+% Requires Symbolic Math Toolbox. No file generation or global simplification.
 q = sym('q', [4,1], 'real');
 dq = sym('dq', [4,1], 'real');
 ddq = sym('ddq', [4,1], 'real');
@@ -42,7 +42,7 @@ for i = 1:4
     end
 end
 
-% Valutatore in memoria: [M,C,G,tauEL,T,V] = evaluate(q,dq,ddq,L,m,I,g).
+% Evaluator in memory: [M,C,G,tauEL,T,V] = evaluate(q,dq,ddq,L,m,I,g).
 evaluate = matlabFunction(M, C, G, tauEL, kinetic, potential, ...
     'Vars', {q,dq,ddq,L,m,I,g}, 'Optimize', false);
 qCases = [0, 0.3, -0.9; 0, -0.7, 0.4; 0, 0.5, -0.2; 0, -0.2, 0.8];

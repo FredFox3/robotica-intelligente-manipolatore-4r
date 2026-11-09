@@ -1,5 +1,5 @@
 function fig = animate_4R(t, theta, L, desiredXY)
-% theta: N x 4; desiredXY: N x 2, campionata agli stessi tempi t.
+% theta: N x 4; desiredXY: N x 2, sampled at the same times t.
 validateattributes(t, {'numeric'}, {'real','finite','vector','nonempty'});
 validateattributes(theta, {'numeric'}, {'real','finite','2d'});
 validateattributes(L, {'numeric'}, {'real','finite','positive','vector','numel',4});
@@ -36,7 +36,7 @@ else
     legend(ax,[h.links,path],{'Robot','Traiettoria effettiva'},'Location','southoutside');
 end
 
-% Campionamento dei fotogrammi; la traccia conserva tutti i campioni.
+% Frame sampling; the trace keeps all samples.
 indices = unique(round(linspace(1,N,min(N,241))));
 previous = 0;
 for k = indices
@@ -50,7 +50,7 @@ for k = indices
     end
     title(ax,sprintf('t = %.2f s | DH: x rosso, y verde, z uscente',t(k)));
     drawnow;
-    pause(0.02); % Riproduzione indicativa, non vincolata al tempo reale.
+    pause(0.02); % Approximate playback, not tied to real time.
     previous = k;
 end
 end

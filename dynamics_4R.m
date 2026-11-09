@@ -1,5 +1,5 @@
 function [M, C, G] = dynamics_4R(theta, dtheta, params)
-% M*ddq + C*dq + G = tau. Baricentri a L_i/2; gravita' lungo -y.
+% M*ddq + C*dq + G = tau. Centers of mass at L_i/2; gravity along -y.
 validateattributes(theta, {'numeric'}, {'real','finite','vector','numel',4});
 validateattributes(dtheta, {'numeric'}, {'real','finite','vector','numel',4});
 if ~isstruct(params) || ~isscalar(params) || ...
@@ -21,7 +21,7 @@ alpha = cumsum(q);
 direction = [cos(alpha).'; sin(alpha).'];
 tangent = [-sin(alpha).'; cos(alpha).'];
 M = zeros(4);
-dM = zeros(4,4,4); % dM(:,:,k) = derivata rispetto a q_k.
+dM = zeros(4,4,4); % dM(:,:,k) = derivative with respect to q_k.
 G = zeros(4,1);
 for i = 1:4
     lengths = L;
@@ -33,7 +33,7 @@ for i = 1:4
     % T_i = (m_i*|Jv_i*dq|^2 + I_i*(sum(dq(1:i)))^2)/2.
     M = M + m(i)*(Jv.'*Jv);
     M(1:i,1:i) = M(1:i,1:i) + I(i);
-    % V_i = m_i*g*y_ci, quindi G_i = dV/dq_i (segno positivo).
+    % V_i = m_i*g*y_ci, so G_i = dV/dq_i (positive sign).
     G = G + m(i)*g*Jv(2,:).';
     for k = 1:i
         dJv = zeros(2,4);
